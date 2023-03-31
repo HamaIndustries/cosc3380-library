@@ -327,6 +327,6 @@ def NavPage(request: HTTPRequest):
     <nav>
 """
     for viewname in report_views.keys():
-        nav+=f"""<a href="/reports/{viewname}">{view.replace("_", " ").title()}</a>"""
+        nav+=f"""<a href="/reports/{viewname.title().replace("_", "")}">{viewname.replace("_", " ").title()}</a>"""
     nav += """</nav></body></html>"""
     return response(request, nav, 200)
