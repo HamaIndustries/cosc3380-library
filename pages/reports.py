@@ -219,7 +219,7 @@ report_listings = {
         "Product_name",
         "Product_id",
     ),
-    "checked_out_by":(
+    "products_held_by":(
         "User_Name",
         "User_type",
         "User_id",
@@ -325,20 +325,8 @@ def NavPage(request: HTTPRequest):
 <body>
     <header>Library Management System</header>
     <nav>
-        <a href="/ProductsFined">Products Fined</a>
-        <a href="/ProductsMissing">Products Missing</a>
-        <a href="/ProductsInInventory">Products In Inventory</a>
-        <a href="/ProductsInfo">Products Information</a>
-        <a href="/UsersCheckedOut">Users Checked Out</a>
-        <a href="/CheckedOutBy">Checked Out By</a>
-        <a href="/MissingProduct">Missing Product</a>
-        <a href="/UsersDisabled">Users Disabled</a>
-        <a href="/UsersLifetimeTotalChecked">Users Lifetime Total Checked</a>
-        <a href="/ItemStatus">Item Status</a>
-        <a href="/UsersApplicable">Users Applicable</a>
-        <a href="/ItemInfo">Item Info</a>
-    </nav>
-</body>
-</html>
 """
+    for viewname in report_views.keys():
+        nav+=f"""<a href="/reports/{viewname}">{view.replace("_", " ").title()}</a>"""
+    nav += """</nav></body></html>"""
     return response(request, nav, 200)
