@@ -125,7 +125,7 @@ def report_template():
 
     return header, footer
 
-
+#generate_report has FUNCTION IN ITSELF
 def generate_report(view: str, columns: dict[str, str], label: str = None):
     """
     Creates a page function reporting on a defined view.
@@ -151,7 +151,7 @@ def generate_report(view: str, columns: dict[str, str], label: str = None):
     for col_label in columns.values():
         thead += f"<th>{col_label}</th>"
     thead += "</tr></thead>"
-
+    #THIS FUNCTION IS IN generate_report FUNCTION!!!
     def page_func(request: HTTPRequest):
         data = get_report(view)
 
@@ -165,7 +165,7 @@ def generate_report(view: str, columns: dict[str, str], label: str = None):
                 tbody += f"<td>{line[col]}</td>"
             tbody += "</tr>"
         tbody += "</tbody>"
-
+######################################################################################
         body = f"""
             <h2>Reports and Views</h2>
             <h1 style="background-color: #333; color: white; padding: 10px;">{label}</h1>
@@ -184,386 +184,105 @@ def generate_report(view: str, columns: dict[str, str], label: str = None):
 # and their corresponding columns
 # this current setup will generate /reports/ProductsCheckedOut and /reports/ProductsFined
 report_listings = {
-    "products_checked_out": ("Product_id", "Product_name", "Product_type"),
+    "products_checked_out": ("Product_type", "Product_name","Product_id"),
     "products_fined": (
         "Product_type",
         "Product_name",
         "Product_id",
         "Fine",
         "Multiplier",
-        "Fine_status",
+        "Fine_status"
     ),
+    "products_missing":(
+        "Product_type",
+        "Product_name",
+        "Product_id",
+        "Cost"    
+    ),
+    "products_in_inventory":(
+        "Product_type",
+        "Product_name",
+        "Product_id",
+        "Cost"    
+    ),
+    "products_info":(
+         "Product_type",
+         "Product_name",
+         "Product_id",
+         "Cost" 
+    ),
+    "users_checked_out":(
+        "User_Name",
+        "User_type",
+        "User_id",
+        "Product_type",
+        "Product_name",
+        "Product_id",
+    ),
+    "checked_out_by":(
+        "User_Name",
+        "User_type",
+        "User_id",
+        "Product_type",
+        "Product_name",
+        "Product_id",
+    ),
+    "missing_product":(
+        "User_Name",
+        "User_type",
+        "User_id",
+        "Product_type",
+        "Product_name",
+        "Product_id",
+        "SKU",
+        "Cost" 
+    ),
+    "users_disabled":(
+        "User_Name",
+        "User_type",
+        "User_id",
+    ),
+    "checkout_history":(
+        "User_Name",
+        "User_id",
+        "Product_type",
+        "Total_Checked"
+    ),
+    "item_status":(
+        "Product_type",
+        "Product_name",
+        "SKU",
+        "Status"
+    ),
+    "items_checked_out__by_approved_users":(
+        "User_id",
+        "User_Name",
+        "Product_type",
+        "Product_name",
+        "SKU",
+        "Cost" 
+    ),
+    "item_info":(
+        "Product_type",
+        "Product_name",
+        "SKU",
+        "Cost"
+    )
 }
 
 report_views = {}
-for view, cols in report_listings.items():
+#"view" is the view name and "cols" are column names of the view 
+for view, cols in report_listings.items(): 
     # create dict of column: pretty label pairs
-    columns = {col: col.title().replace("_", " ") for col in cols}
+    columns = {col: col.title().replace("_", " ") for col in cols} 
+    """titled the column names to be capitalized and replace underscores with blank and append to dict of "columns" 
+       It's also making itself the key and the value corresponding to that key
+       ex: {"Product_type": Product Type, "Product_name": Product Name, "Product_id": Product Id}
+    """
 
     # generate a new response function for each view
-    report_views[view] = generate_report(view, columns)
-
-
-# KEVIN MESSAGE
-# Deleted Products Checked Out, replaced with templated function as above. See urls.py for details.
-# Remove this message and the following response functions, replacing them with their
-# templated urls as shown.
-
-
-def ProductsFined(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Products Fined</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-             <th>Fine</th>
-             <th>Multiplier</th>
-             <th>Fine Status</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['Fine'])}</td>"
-        body += f"<td>{str(item['Multiplier'])}</td>"
-        body += f"<td>{str(item['Fine_status'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def ProductMissing(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Products Missing</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-             <th>Cost</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def ProductsInventory(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Products In Inventory</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-             <th>Cost</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def ProductsInfo(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Products Info</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-             <th>Cost</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def UsersCheckedOut(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Users Checked Out</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>User Name</th>
-             <th>User Type</th>
-             <th>User ID</th>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['User_type'])}</td>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def CheckedOutBy(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Products held by</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>User Name</th>
-             <th>User Type</th>
-             <th>User ID</th>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['User_type'])}</td>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def MissingProduct(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-   <h2>Reports &amp; Views</h2>
-         <h1 style="background-color: #333; color: white; padding: 10px;">Missing Products</h1>
-         <table  style="width:100%">
-        <thead>
-          <tr>
-             <th>User Name</th>
-             <th>User Type</th>
-             <th>ID</th>
-             <th>Product Type</th>
-             <th>Product Name</th>
-             <th>Product ID</th>
-             <th>SKU</th>
-             <th>Cost</th>
-           </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['User_type'])}</td>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['SKU'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-
-        return response(request, header + body + footer, 200)
-
-
-def UsersDisabled(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-<h2>Reports &amp; Views</h2>
-        <h1 style="background-color: #333; color: white; padding: 10px;">Users Disabled</h1>
-        <table  style="width:100%">
-        <thead>
-        <tr>
-            <th>User Name</th>
-            <th>User Type</th>
-            <th>User ID</th>
-        </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['User_type'])}</td>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += "</tr>"
-        return response(request, header + body + footer, 200)
-
-
-def UsersLifetimeTotalChecked(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-<h2>Reports &amp; Views</h2>
-        <h1 style="background-color: #333; color: white; padding: 10px;">Products In Inventory</h1>
-        <table  style="width:100%">
-        <thead>
-        <tr>
-            <th>User Name</th>
-            <th>User Type</th>
-            <th>User ID</th>
-            <th>Total Checked</th>
-        </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['User_type'])}</td>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += f"<td>{str(item['Total_Checked'])}</td>"
-        body += "</tr>"
-        return response(request, header + body + footer, 200)
-
-
-def ItemStatus(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-<h2>Reports &amp; Views</h2>
-        <h1 style="background-color: #333; color: white; padding: 10px;">Products In Inventory</h1>
-        <table  style="width:100%">
-        <thead>
-        <tr>
-            <th>Product Type</th>
-            <th>Product Name</th>
-            <th>Product ID</th>
-            <th>SKU</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['Product_id'])}</td>"
-        body += f"<td>{str(item['SKU'])}</td>"
-        body += f"<td>{str(item['Status'])}</td>"
-        body += "</tr>"
-        return response(request, header + body + footer, 200)
-
-
-def UsersApplicable(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-<h2>Reports &amp; Views</h2>
-        <h1 style="background-color: #333; color: white; padding: 10px;">Products In Inventory</h1>
-        <table  style="width:100%">
-        <thead>
-        <tr>
-            <th>User ID</th>
-            <th>User Name</th>
-            <th>Product Type</th>
-            <th>Item Name</th>
-            <th>SKU</th>
-            <th>Cost</th>
-        </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['User_id'])}</td>"
-        body += f"<td>{str(item['User_Name'])}</td>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['SKU'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-        return response(request, header + body + footer, 200)
-
-
-def ItemInfo(request: HTTPRequest):
-    info = generate_data()
-    header, footer = report_template()
-    body = f"""
-<h2>Reports &amp; Views</h2>
-        <h1 style="background-color: #333; color: white; padding: 10px;">Products In Inventory</h1>
-        <table  style="width:100%">
-        <thead>
-        <tr>
-            <th>Product Type</th>
-            <th>Item Name</th>
-            <th>SKU</th>
-            <th>Cost</th>
-        </tr>
-        </thead>
-        <tbody>
-    """
-    for item in info:
-        body += "<tr>"
-        body += f"<td>{str(item['Product_type'])}</td>"
-        body += f"<td>{str(item['Product_name'])}</td>"
-        body += f"<td>{str(item['SKU'])}</td>"
-        body += f"<td>{str(item['Cost'])}</td>"
-        body += "</tr>"
-        return response(request, header + body + footer, 200)
-
+    report_views[view] = generate_report(view, columns) #send the view name and columns
+   
 
 def NavPage(request: HTTPRequest):
     nav = """
