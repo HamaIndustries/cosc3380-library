@@ -53,7 +53,7 @@ def item_management_form(request: HTTPRequest):
 </html>
 """
 
-return response(request, items, 200)
+    return response(request, items, 200)
 
 def handle_item_management_form(request: HTTPRequest):
     # Check if the form was submitted
@@ -126,7 +126,7 @@ def product_management_form (request: HTTPRequest):
 </html>
 """
 
-return response(request, products, 200)
+    return response(request, products, 200)
 
 def handle_product_management_form(request: HTTPRequest):
     # Check if the form was submitted
@@ -173,7 +173,7 @@ def new_user_form (request: HTTPRequest):
 </body>
 </html>
 """
-return response(request, newUser, 200)
+    return response(request, newUser, 200)
 
 def handle_new_user_form(request: HTTPRequest):
     # Check if the form was submitted
