@@ -1,6 +1,7 @@
 from app import register
 from web import static_files
 from pages import example
+from pages import myforms
 
 register("/myforms/page", myforms.item_management_form, "get")
 register("/myforms/handle-new-item", myforms.handle_item_management_form, "post")
