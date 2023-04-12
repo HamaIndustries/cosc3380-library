@@ -1,5 +1,92 @@
 import urllib.parse
+import random
 from web import response, redirect, HTTPRequest
+
+#dummy function
+def get_report(view: str):
+    """
+    returns data of corresponding view on database.
+    """
+    query = f"SELECT * FROM library.{view};"  # passed to connection object
+
+    info = []
+    users = [
+        {
+            "First_name": "John",
+            "Last_name": "Doe",
+            "User_type": "Student",
+            "User_id": random.randint(10000000, 99999999),
+        },
+        {
+            "First_name": "Jane",
+            "Last_name": "Doe",
+            "User_type": "Teacher",
+            "User_id": random.randint(10000000, 99999999),
+        },
+        {
+            "First_name": "Bob",
+            "Last_name": "Smith",
+            "User_type": "Staff",
+            "User_id": random.randint(10000000, 99999999),
+        },
+    ]
+    products = [
+        {
+            "Product_type": "Book",
+            "Product_name": "The Great Gatsby",
+            "Product_id": random.randint(10000000, 99999999),
+        },
+        {
+            "Product_type": "Magazine",
+            "Product_name": "National Geographic",
+            "Product_id": random.randint(10000000, 99999999),
+        },
+        {
+            "Product_type": "E-Book",
+            "Product_name": "To Kill a Mockingbird",
+            "Product_id": random.randint(10000000, 99999999),
+        },
+        {
+            "Product_type": "Audio Book",
+            "Product_name": "Harry Potter and the Sorcerer's Stone",
+            "Product_id": random.randint(10000000, 99999999),
+        },
+        {
+            "Product_type": "DVD",
+            "Product_name": "The Lord of the Rings: The Fellowship of the Ring",
+            "Product_id": random.randint(10000000, 99999999),
+        },
+    ]
+    SKU = random.randint(1000000000, 9999999999)
+    TotalChecked = random.randint(0, 1000)
+    fine_status = ["Paid", "Unpaid", "Lost"]
+    Status = ["Checked Out", "Held", "Stock"]
+    for i in range(10):
+        user = random.choice(users)
+        product = random.choice(products)
+        fine = round(random.uniform(0.01, 50.00), 2)
+        multiplier = round(random.uniform(1.00, 2.00), 2)
+        cost = round(random.uniform(1.00, 50.00), 2)
+        info.append(
+            {
+                "User_type": user["User_type"],
+                "First_name": user["First_name"],
+                "Last_name": user["Last_name"],
+                "User_Name": user["Last_name"] + ", " + user["First_name"],
+                "User_id": user["User_id"],
+                "Product_type": product["Product_type"],
+                "Product_name": product["Product_name"],
+                "Product_id": product["Product_id"],
+                "Cost": cost,
+                "Fine_status": random.choice(fine_status),
+                "Fine": fine,
+                "Multiplier": multiplier,
+                "SKU": SKU,
+                "Total_Checked": TotalChecked,
+                "Status": random.choice(Status),
+            }
+        )
+    return info
 
 def item_management_form(request: HTTPRequest):
     items = """
@@ -52,19 +139,38 @@ def item_management_form(request: HTTPRequest):
 </body>
 </html>
 """
+    if request.method == 'POST':
+        # handle form submission
+        item_name = request.form['item-name']
+        item_description = request.form['item-description']
+        item_price = request.form['item-price']
 
-    return response(request, items, 200)
+        # store the values in the database or perform any other necessary operation
+        # ...
+
+        # return a response
+        return response(request, "Item added successfully")
+
+    # if it's a GET request, just return the form
+    return response(request, items)
 
 def handle_item_management_form(request: HTTPRequest):
     # Check if the form was submitted
     if request.method == 'POST':
         # Parse the form data
-        item_id = request.data.get('item-id')
-        item_name = request.data.get('item-name')
-        item_description = request.data.get('item-description')
-        item_price = request.data.get('item-price')
-
-        # Process the data (e.g. add, update, or delete items)
+        if request.path == "/handle-new-item":
+            item_id = request.data.get('item-id')
+            item_name = request.data.get('item-name')
+            item_description = request.data.get('item-description')
+            item_price = request.data.get('item-price')
+        # Store the values in the database / process the data (e.g. add, update, or delete items)
+            items.append({
+                "name": item_name,
+                "description": item_description,
+                "price": item_price,
+            })
+        # Redirect to the item management page
+            return redirect(request, "/item-management")
 
         # Generate the redirect URL
         success = 1  # Set to 1 to indicate success
@@ -125,7 +231,18 @@ def product_management_form (request: HTTPRequest):
 </body>
 </html>
 """
+if request.method == 'POST':
+        # handle form submission
+        product_name = request.form['product-name']
+        product_description = request.form['product-description']
+        product_price = request.form['product-price']
 
+        # store the values in the database or perform any other necessary operation
+        # ...
+
+        # return a response
+        return response(request, "Product added successfully")
+    # if it's a GET request, just return the form
     return response(request, products, 200)
 
 def handle_product_management_form(request: HTTPRequest):
@@ -138,7 +255,11 @@ def handle_product_management_form(request: HTTPRequest):
         product_price = request.data.get('product-price')
 
         # Process the data (e.g. add, update, or delete products)
-
+         products.append({
+            "name": product_name,
+            "description": product_description,
+            "price": product_price,
+        })
         # Generate the redirect URL
         success = 1  # Set to 1 to indicate success
         text = f"Product '{product_name}' was successfully updated."
@@ -148,7 +269,20 @@ def handle_product_management_form(request: HTTPRequest):
     # If the form was not submitted, render the form page
     return product_management_form(request)
 
+
 def new_user_form (request: HTTPRequest):
+    if request.method == 'POST':
+        # handle form submission
+        user_name = request.form['user-name']
+        user_type = request.form['user-type']
+
+        # store the values in the database or perform any other necessary operation
+        # ...
+
+        # return a response
+        return response(request, "User added successfully")
+
+    # if it's a GET request, just return the form
     newUser = """
     <html>
 <head>
@@ -183,7 +317,10 @@ def handle_new_user_form(request: HTTPRequest):
         user_type = request.data.get('user-type')
 
         # Process the data (e.g. create a new user)
-
+        users.append({
+            "name": user_name,
+            "type": user_type
+        })
         # Generate the redirect URL
         success = 1  # Set to 1 to indicate success
         text = f"User '{user_name}' was successfully created."
@@ -195,7 +332,24 @@ def handle_new_user_form(request: HTTPRequest):
 
 
 def generating_holds_form(request: HTTPRequest):
-    # Render the form page
+    # Check if the form was submitted
+    if request.method == 'POST':
+        # Parse the form data
+        hold_name = request.data.get('hold-name')
+        hold_type = request.data.get('hold-type')
+        hold_duration = request.data.get('hold-duration')
+        hold_reason = request.data.get('hold-reason')
+
+        # Store the values in the database or perform any other necessary operation
+        # ...
+
+        # Generate the redirect URL
+        success = 1  # Set to 1 to indicate success
+        text = f"Hold '{hold_name}' was successfully generated."
+        redirect_url = f"/generating-holds?{urllib.parse.urlencode({'success': success, 'text': text})}"
+        return redirect(request, redirect_url)
+
+    # If the form was not submitted, render the form page
     holds_form = """
     <html>
     <head>
@@ -246,4 +400,6 @@ def handle_generating_holds_form(request: HTTPRequest):
         return redirect(request, redirect_url)
 
     # If the form was not submitted, render the form page
+    success = request.args.get('success')
+    text = request.args.get('text')
     return generating_holds_form(request)
