@@ -1,9 +1,12 @@
+from urllib import parse
 from pathlib import Path
 from typing import BinaryIO, Iterable, Union
 
 import io_
 from io_ import PathLike
 from typing_ import Headers, Status, ResponseBody, QuerySet
+
+from database.library import user_from_session_token
 
 DEFAULT_BLOCK_SIZE = 256000
 
@@ -58,6 +61,8 @@ class HTTPRequest:
         self.query: dict[str, list[str]] = query
         self.data: dict[str, list[str]] = data
         self.body: bytes = body or b""
+        self.session = parse.parse_qs(env.get("HTTP_COOKIE","")).get("libsitecookie", [None])[0]
+        self.user = user_from_session_token(self.session) if self.session else None
 
     @property
     def text(self):
@@ -103,8 +108,7 @@ def response(
 def redirect(
     request: HTTPRequest, to: str, status: Status = "302 Found", headers: Headers = None
 ) -> HTTPResponse:
-    # Don't use this, it's bugged.
-    headers = MultiField()
+    headers = MultiField(headers or {})
     headers.set_field("Location", to)
     return response(request, None, status, headers)
 

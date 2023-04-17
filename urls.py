@@ -1,10 +1,12 @@
 from app import register
 
-from pages import reports, example
+from pages import reports, example, login
 #localhost:8052
 register("/example/page", example.example_get_response, "get")
 register("/example/submit", example.example_post_response, "post")
 register("/hello", example.hello)
+
+register("/login", login.login_page)
 
 for viewname, func in reports.report_views.items():
     # register generated views from reports
